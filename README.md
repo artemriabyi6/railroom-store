@@ -95,7 +95,7 @@ All variables are documented in [`.env.example`](.env.example).
 ### Vercel (recommended)
 
 1. Import the GitHub repository in Vercel (framework preset: Next.js).
-2. **Storage → Create → Neon (Postgres)** and connect it to the project (all environments).
+2. **Storage → Create → Neon (Postgres)** in the same region as the functions (`vercel.json` pins them to `fra1`, Frankfurt), and connect it to the project.
 3. **Settings → Environment Variables**: add `ADMIN_PASSWORD`, and optionally `LIQPAY_PUBLIC_KEY`, `LIQPAY_PRIVATE_KEY` (and `LIQPAY_SANDBOX=0` for live payments).
 4. Redeploy. The first request creates the tables and seeds the catalogue.
 
