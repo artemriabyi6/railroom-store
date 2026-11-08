@@ -46,4 +46,13 @@ create table if not exists messages (
 );
 create index if not exists messages_kind_created_idx on messages (kind, created_at desc);
 create unique index if not exists messages_newsletter_email_uq on messages (email) where kind = 'newsletter';
+
+-- Repair: an early build stored jsonb values double-encoded (as JSON strings).
+-- Unwrap any such rows; a no-op once data is clean.
+update products set details = (details #>> '{}')::jsonb where jsonb_typeof(details) = 'string';
+update products set stock   = (stock   #>> '{}')::jsonb where jsonb_typeof(stock)   = 'string';
+update products set art     = (art     #>> '{}')::jsonb where jsonb_typeof(art)     = 'string';
+update orders   set lines   = (lines   #>> '{}')::jsonb where jsonb_typeof(lines)   = 'string';
+update orders   set customer = (customer #>> '{}')::jsonb where jsonb_typeof(customer) = 'string';
+update messages set payload = (payload #>> '{}')::jsonb where jsonb_typeof(payload) = 'string';
 `;

@@ -1,7 +1,7 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { adjustStock, type StockLine } from "@/services/catalog/repository";
-import { fromJson, getDb, hasDatabase, type Sql } from "@/services/db/client";
+import { fromJson, getDb, hasDatabase, jsonParam, type Sql } from "@/services/db/client";
 import { mutateJsonFile, readJsonFile } from "@/services/storage/jsonFile";
 import type { CurrencyCode, CustomerDetails, Order, OrderLine, OrderStatus } from "@/types/commerce";
 
@@ -61,8 +61,8 @@ export async function placeOrder(order: Order): Promise<Order> {
       await adjustStock(toStockLines(order.lines), -1, tx);
       await tx`
         insert into orders (id, status, currency, lines, subtotal, shipping, total, customer, payment_provider, payment_ref, created_at, updated_at)
-        values (${order.id}, ${order.status}, ${order.currency}, ${JSON.stringify(order.lines)}::jsonb, ${order.subtotal}, ${order.shipping},
-                ${order.total}, ${JSON.stringify(order.customer)}::jsonb, ${order.paymentProvider ?? null}, ${order.paymentRef ?? null},
+        values (${order.id}, ${order.status}, ${order.currency}, ${jsonParam(tx, order.lines)}, ${order.subtotal}, ${order.shipping},
+                ${order.total}, ${jsonParam(tx, order.customer)}, ${order.paymentProvider ?? null}, ${order.paymentRef ?? null},
                 ${order.createdAt}::timestamptz, ${order.updatedAt}::timestamptz)`;
     });
     return order;

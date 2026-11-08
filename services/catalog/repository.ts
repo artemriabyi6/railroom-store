@@ -1,6 +1,6 @@
 import "server-only";
 import { products as seedProducts } from "@/data/products";
-import { fromJson, getDb, hasDatabase, type Sql } from "@/services/db/client";
+import { fromJson, getDb, hasDatabase, jsonParam, type Sql } from "@/services/db/client";
 import { mutateJsonFile, readJsonFile } from "@/services/storage/jsonFile";
 import type { Product, Size } from "@/types/product";
 
@@ -78,7 +78,7 @@ async function insertRow(sql: Sql, p: StoredProduct) {
   await sql`
     insert into products (slug, name, color_name, category, price_eur, description, details, stock, art, rail, is_new, position)
     values (${p.slug}, ${p.name}, ${p.colorName}, ${p.category}, ${p.priceEur}, ${p.description},
-            ${JSON.stringify(p.details)}::jsonb, ${JSON.stringify(p.stock)}::jsonb, ${JSON.stringify(p.art)}::jsonb,
+            ${jsonParam(sql, p.details)}, ${jsonParam(sql, p.stock)}, ${jsonParam(sql, p.art)},
             ${Boolean(p.rail)}, ${Boolean(p.isNew)}, ${p.position})`;
 }
 

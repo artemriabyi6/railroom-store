@@ -1,5 +1,5 @@
 import "server-only";
-import { fromJson, getDb, hasDatabase } from "@/services/db/client";
+import { fromJson, getDb, hasDatabase, jsonParam } from "@/services/db/client";
 import { mutateJsonFile, readJsonFile } from "@/services/storage/jsonFile";
 
 /** Contact messages and newsletter subscriptions. */
@@ -20,7 +20,7 @@ export async function saveMessage(kind: MessageKind, email: string, payload: Rec
   if (hasDatabase()) {
     const sql = await getDb();
     const rows = await sql`
-      insert into messages (kind, email, payload) values (${kind}, ${email}, ${JSON.stringify(payload)}::jsonb)
+      insert into messages (kind, email, payload) values (${kind}, ${email}, ${jsonParam(sql, payload)})
       on conflict do nothing returning id`;
     return rows.length > 0;
   }

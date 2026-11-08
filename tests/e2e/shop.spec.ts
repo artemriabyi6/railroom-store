@@ -35,7 +35,7 @@ test("select a product, choose a size and add it to the bag", async ({ page }) =
   await panel.getByRole("button", { name: "back" }).click();
   await expect(panel.getByRole("img", { name: /back view/ })).toBeVisible();
 
-  await panel.locator("label", { hasText: "L" }).first().click();
+  await panel.getByRole("radio", { name: "L", exact: true }).check();
   await panel.getByRole("button", { name: "Add to bag" }).click();
 
   const bag = page.getByRole("dialog", { name: /Your bag \(1\)/ });
@@ -76,7 +76,7 @@ test("search filters products and opens the result", async ({ page }) => {
 
 test("checkout validates input and places an order", async ({ page }) => {
   await page.goto("/products/plain-heavy-tee");
-  await page.getByRole("article").locator("label", { hasText: "M" }).first().click();
+  await page.getByRole("article").getByRole("radio", { name: "M", exact: true }).check();
   await page.getByRole("article").getByRole("button", { name: "Add to bag" }).click();
   await page.getByRole("dialog").getByRole("link", { name: "Checkout" }).click();
   await expect(page).toHaveURL(/\/checkout$/);

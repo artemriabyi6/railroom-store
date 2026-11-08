@@ -24,7 +24,7 @@ export function getDb(): Promise<Sql> {
   if (!ready) {
     client ??= postgres(url, {
       // Serverless functions: keep the pool tiny and let idle sockets close.
-      max: 3,
+      max: Number(process.env.DATABASE_POOL_MAX) || 3,
       idle_timeout: 20,
       connect_timeout: 10,
       // Works through transaction-mode poolers (Neon/Supabase "-pooler" URLs).
@@ -46,4 +46,12 @@ export function getDb(): Promise<Sql> {
 /** jsonb values may arrive parsed or as text depending on driver/type configuration. */
 export function fromJson<T>(value: unknown): T {
   return (typeof value === "string" ? JSON.parse(value) : value) as T;
+}
+
+/**
+ * A jsonb query parameter. The driver serialises JSON itself, so values must be
+ * passed as objects through sql.json() — never pre-stringified (that double-encodes).
+ */
+export function jsonParam(sql: Sql, value: unknown) {
+  return sql.json(value as Parameters<Sql["json"]>[0]);
 }
