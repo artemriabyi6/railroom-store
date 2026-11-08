@@ -1,0 +1,41 @@
+@use "tokens" as *;
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
+  min-height: calc(100svh - var(--header-h));
+  padding-top: clamp(1.5rem, 7svh, 5.5rem);
+  padding-bottom: var(--sp-12);
+
+  > * {
+    grid-area: stack;
+  }
+
+  @include down($bp-md) {
+    padding-top: var(--sp-8);
+  }
+}
+
+.rack {
+  align-self: start;
+  min-width: 0;
+  transition:
+    filter var(--dur-slow) $ease-out,
+    opacity var(--dur-slow) $ease-out,
+    transform var(--dur-slow) $ease-out;
+
+  .stage[data-selected] & {
+    filter: blur(9px);
+    opacity: 0.45;
+    transform: scale(0.985);
+    pointer-events: none;
+  }
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  cursor: zoom-out;
+}

@@ -1,0 +1,60 @@
+@use "tokens" as *;
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-10);
+  padding-inline: var(--gutter);
+  text-align: center;
+
+  &[data-align="split"] {
+    @include up($bp-md) {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+}
+
+.text {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.eyebrow {
+  @include label-caps(var(--fs-2xs));
+  font-weight: 500;
+  color: var(--c-text-muted);
+}
+
+.title {
+  @include wide-display(800);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.intro {
+  max-width: 48ch;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+
+  .head[data-align="center"] & {
+    margin-inline: auto;
+  }
+}
+
+.action {
+  flex: none;
+  padding: 4px 0;
+  border-bottom: 1px solid currentColor;
+  @include label-caps(var(--fs-2xs));
+  transition: opacity var(--dur-fast);
+  @include focus-ring;
+
+  @include hover {
+    opacity: 0.6;
+  }
+}

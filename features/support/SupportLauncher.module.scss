@@ -1,0 +1,41 @@
+@use "tokens" as *;
+
+.launcher {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  color: var(--c-accent-contrast);
+  box-shadow:
+    0 0 0 4px rgb(31 158 99 / 0.18),
+    var(--shadow-md);
+  transition: transform var(--dur-fast) $ease-out;
+  @include focus-ring;
+
+  @include hover {
+    transform: scale(1.06);
+  }
+}
+
+.dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #12b76a;
+}
+
+.intro {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}

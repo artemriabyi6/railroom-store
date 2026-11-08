@@ -1,0 +1,11 @@
+@use "tokens" as *;
+
+.section {
+  padding-block: clamp(3.5rem, 8vw, 6.5rem);
+}
+
+.container {
+  width: min(var(--container), 100%);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}

@@ -1,0 +1,96 @@
+@use "tokens" as *;
+
+.wrap {
+  display: grid;
+  gap: var(--sp-8);
+}
+
+.form {
+  display: grid;
+  gap: var(--sp-4);
+  width: min(420px, 100%);
+  margin: 0 auto;
+}
+
+.error {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-sm);
+  background: #fef3f2;
+  color: var(--c-danger);
+  font-size: var(--fs-sm);
+}
+
+.result {
+  padding: var(--sp-6);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  animation: in var(--dur-med) $ease-out;
+}
+
+.resultHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.label {
+  @include label-caps(var(--fs-2xs));
+  color: var(--c-text-muted);
+}
+
+.id {
+  @include wide-display(800);
+  font-size: var(--fs-lg);
+}
+
+.status {
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  @include label-caps(var(--fs-2xs));
+  background: #fffaeb;
+  color: #93370d;
+
+  &[data-status="paid"] {
+    background: #ecfdf3;
+    color: var(--c-success);
+  }
+
+  &[data-status="cancelled"] {
+    background: #f2f4f7;
+    color: var(--c-text-muted);
+  }
+}
+
+.meta {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}
+
+.lines {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  font-size: var(--fs-sm);
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+  }
+}
+
+.total {
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--c-border);
+  font-weight: 700;
+}
+
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

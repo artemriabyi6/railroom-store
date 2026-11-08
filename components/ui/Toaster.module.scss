@@ -1,0 +1,58 @@
+@use "tokens" as *;
+
+.region {
+  position: fixed;
+  left: 50%;
+  bottom: var(--sp-6);
+  z-index: 200;
+  display: grid;
+  gap: var(--sp-2);
+  transform: translateX(-50%);
+  width: min(92vw, 380px);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-text);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  font-size: var(--fs-sm);
+  pointer-events: auto;
+  animation: enter var(--dur-med) $ease-out;
+
+  &[data-tone="success"] {
+    background: var(--c-success);
+  }
+
+  &[data-tone="error"] {
+    background: var(--c-danger);
+  }
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: -6px -8px -6px 0;
+  border-radius: 50%;
+  color: inherit;
+  opacity: 0.8;
+
+  @include hover {
+    opacity: 1;
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

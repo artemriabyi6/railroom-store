@@ -1,0 +1,62 @@
+@use "tokens" as *;
+
+.lead {
+  margin-bottom: var(--sp-4);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+
+  th,
+  td {
+    padding: var(--sp-3) var(--sp-2);
+    text-align: left;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  thead th {
+    @include label-caps(var(--fs-2xs));
+    color: var(--c-text-muted);
+  }
+
+  tbody th {
+    font-weight: 700;
+  }
+}
+
+.status,
+.pick {
+  @include label-caps(var(--fs-2xs));
+
+  &[data-level="out"] {
+    color: var(--c-text-subtle);
+    text-decoration: line-through;
+  }
+
+  &[data-level="low"] {
+    color: #b54708;
+  }
+
+  &[data-level="in"] {
+    color: var(--c-success);
+  }
+}
+
+.pick {
+  min-height: 32px;
+  @include focus-ring;
+
+  @include hover {
+    text-decoration: underline;
+  }
+}
+
+.note {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}

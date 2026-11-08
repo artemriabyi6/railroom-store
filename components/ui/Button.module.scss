@@ -1,0 +1,92 @@
+@use "tokens" as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  @include label-caps;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast),
+    color var(--dur-fast),
+    border-color var(--dur-fast),
+    opacity var(--dur-fast),
+    transform var(--dur-fast);
+  @include focus-ring;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+.sm {
+  min-height: 32px;
+  padding: 0 var(--sp-4);
+  font-size: var(--fs-2xs);
+}
+
+.md {
+  min-height: 44px;
+  padding: 0 var(--sp-6);
+}
+
+.lg {
+  min-height: 52px;
+  padding: 0 var(--sp-8);
+}
+
+.block {
+  width: 100%;
+}
+
+.solid {
+  background: var(--c-text);
+  color: #fff;
+
+  @include hover {
+    background: #333;
+  }
+
+  &:disabled {
+    background: var(--c-disabled-bg);
+    color: var(--c-disabled-text);
+  }
+}
+
+.outline {
+  border-color: var(--c-border-strong);
+  color: var(--c-text);
+  background: transparent;
+
+  @include hover {
+    background: var(--c-text);
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.ghost {
+  color: var(--c-text);
+
+  @include hover {
+    background: rgb(0 0 0 / 0.05);
+  }
+}
+
+.link {
+  min-height: 0;
+  padding: 2px 0;
+  border-radius: 0;
+  border-bottom: 1px solid currentColor;
+  font-size: var(--fs-2xs);
+
+  @include hover {
+    opacity: 0.6;
+  }
+}

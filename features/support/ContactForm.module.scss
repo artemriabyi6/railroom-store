@@ -1,0 +1,48 @@
+@use "tokens" as *;
+
+.form {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.error {
+  padding: var(--sp-3);
+  border-radius: var(--radius-sm);
+  background: #fef3f2;
+  color: var(--c-danger);
+  font-size: var(--fs-sm);
+}
+
+.sent {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6) 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  color: #fff;
+}
+
+.sentTitle {
+  @include wide-display(800);
+  font-size: var(--fs-md);
+  color: var(--c-text);
+}

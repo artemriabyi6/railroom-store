@@ -1,0 +1,47 @@
+@use "tokens" as *;
+
+.box {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-10) var(--sp-6);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  text-align: center;
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--sp-2);
+  border-radius: 50%;
+  background: var(--c-accent);
+  color: #fff;
+}
+
+.label {
+  @include label-caps(var(--fs-2xs));
+  color: var(--c-text-muted);
+}
+
+.id {
+  @include wide-display(800);
+  font-size: var(--fs-xl);
+  user-select: all;
+}
+
+.copy {
+  max-width: 46ch;
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}

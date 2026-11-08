@@ -1,0 +1,117 @@
+@use "tokens" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-4);
+  width: min(var(--container), 100%);
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+
+  @include down($bp-lg) {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 62vw);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    padding-bottom: var(--sp-2);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > li {
+      scroll-snap-align: start;
+    }
+  }
+}
+
+.tile {
+  --w: 120px;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  overflow: hidden;
+  transition:
+    box-shadow var(--dur-med) $ease-out,
+    transform var(--dur-med) $ease-out;
+  @include focus-ring;
+
+  @include hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.stage {
+  position: relative;
+  display: block;
+  height: calc(var(--w) * 1.25 + 2.5rem);
+  margin-top: var(--sp-6);
+}
+
+.rail {
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-rail);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.15);
+}
+
+.hanger {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: var(--w);
+  height: calc(var(--w) * 1.25);
+  margin-left: calc(var(--w) / -2);
+  transform: translateX(calc(var(--i) * 26px)) perspective(800px) rotateY(64deg);
+  transition: transform var(--dur-slow) $ease-out;
+  z-index: 1;
+
+  &:nth-child(3) {
+    z-index: 2;
+  }
+
+  .tile:hover &,
+  .tile:focus-visible & {
+    transform: translateX(calc(var(--i) * 74px)) perspective(800px) rotateY(0deg) scale(0.86);
+  }
+}
+
+.art {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  filter: drop-shadow(0 8px 8px rgb(0 0 0 / 0.12));
+}
+
+.label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: auto;
+  padding: var(--sp-4) var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--c-border);
+}
+
+.name {
+  @include wide-display(800);
+  font-size: var(--fs-sm);
+}
+
+.count {
+  font-size: var(--fs-2xs);
+  color: var(--c-text-muted);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}

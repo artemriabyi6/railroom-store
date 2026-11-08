@@ -1,0 +1,81 @@
+@use "tokens" as *;
+
+.footer {
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-10) var(--sp-6);
+  width: min(var(--container), 100%);
+  margin: 0 auto;
+  padding: var(--sp-12) var(--gutter) var(--sp-10);
+
+  @include up($bp-md) {
+    grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+  }
+}
+
+.brand {
+  grid-column: 1 / -1;
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+
+  @include up($bp-md) {
+    grid-column: auto;
+  }
+}
+
+.logo {
+  @include wide-display(800);
+  font-size: var(--fs-lg);
+}
+
+.tagline {
+  max-width: 34ch;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+.col ul {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.col a {
+  display: inline-block;
+  padding: var(--sp-1) 0;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  transition: color var(--dur-fast);
+
+  @include hover {
+    color: var(--c-text);
+  }
+}
+
+.colTitle {
+  margin-bottom: var(--sp-3);
+  @include label-caps(var(--fs-2xs));
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-6);
+  width: min(var(--container), 100%);
+  margin: 0 auto;
+  padding: var(--sp-5) var(--gutter) calc(var(--sp-5) + 4.5rem);
+  border-top: 1px solid var(--c-border);
+  @include label-caps(var(--fs-2xs));
+  font-weight: 500;
+  color: var(--c-text-subtle);
+
+  @include up($bp-md) {
+    padding-bottom: var(--sp-5);
+  }
+}

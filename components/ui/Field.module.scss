@@ -1,0 +1,56 @@
+@use "tokens" as *;
+
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  @include label-caps(var(--fs-2xs));
+}
+
+.optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--c-text-subtle);
+}
+
+.control {
+  width: 100%;
+  min-height: 46px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  font-size: 16px;
+  transition:
+    border-color var(--dur-fast),
+    box-shadow var(--dur-fast);
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-text);
+    box-shadow: 0 0 0 3px rgb(43 89 255 / 0.18);
+  }
+
+  .field[data-invalid] & {
+    border-color: var(--c-danger);
+  }
+}
+
+textarea.control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.error {
+  font-size: var(--fs-xs);
+  color: var(--c-danger);
+}
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}

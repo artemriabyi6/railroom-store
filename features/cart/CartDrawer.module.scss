@@ -1,0 +1,151 @@
+@use "tokens" as *;
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-16) var(--sp-4);
+  text-align: center;
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.emptyTitle {
+  @include wide-display(800);
+  font-size: var(--fs-md);
+  color: var(--c-text);
+}
+
+.shippingNote {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  font-size: var(--fs-xs);
+  text-align: center;
+}
+
+.lines {
+  display: grid;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0;
+  border-bottom: 1px solid var(--c-border);
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.thumb {
+  display: block;
+  width: 72px;
+  height: 88px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.info {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.sub {
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    @include focus-ring;
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  output {
+    min-width: 20px;
+    text-align: center;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+}
+
+.remove {
+  padding: 4px 0;
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+  border-bottom: 1px solid currentColor;
+  @include focus-ring;
+
+  @include hover {
+    color: var(--c-danger);
+  }
+}
+
+.price {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.summary {
+  display: grid;
+  gap: var(--sp-4);
+
+  dl {
+    display: grid;
+    gap: var(--sp-1);
+    font-size: var(--fs-sm);
+
+    > div {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.total {
+  margin-top: var(--sp-1);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--c-border);
+  font-weight: 700;
+}

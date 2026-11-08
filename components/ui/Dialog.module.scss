@@ -1,0 +1,186 @@
+@use "tokens" as *;
+
+.dialog {
+  padding: 0;
+  border: 0;
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: var(--shadow-lg);
+  max-height: 100dvh;
+  overflow: hidden;
+
+  &::backdrop {
+    background: var(--c-overlay);
+    backdrop-filter: blur(2px);
+    animation: fade var(--dur-med) $ease-out;
+  }
+
+  &[open] {
+    display: flex;
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: inherit;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--c-border);
+
+  &:has(:global(.visually-hidden)) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+    z-index: 2;
+  }
+}
+
+.title {
+  @include wide-display(800);
+  font-size: var(--fs-sm);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: calc(var(--sp-2) * -1);
+  border-radius: 50%;
+  @include focus-ring;
+
+  @include hover {
+    background: rgb(0 0 0 / 0.06);
+  }
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sp-5);
+}
+
+.footer {
+  padding: var(--sp-4) var(--sp-5) calc(var(--sp-4) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--c-border);
+}
+
+.center {
+  width: min(560px, calc(100vw - 2 * var(--gutter)));
+  max-height: min(86dvh, 760px);
+  border-radius: var(--radius-md);
+  margin: auto;
+
+  &[open] {
+    animation: pop var(--dur-med) $ease-out;
+  }
+}
+
+.top {
+  width: min(720px, calc(100vw - 2 * var(--gutter)));
+  max-height: min(80dvh, 720px);
+  margin: 10vh auto auto;
+  border-radius: var(--radius-md);
+
+  &[open] {
+    animation: drop var(--dur-med) $ease-out;
+  }
+
+  @include down($bp-md) {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100dvh;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+.drawer {
+  width: min(440px, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  margin: 0 0 0 auto;
+
+  &[open] {
+    animation: slide var(--dur-med) $ease-out;
+  }
+}
+
+.corner {
+  width: min(380px, calc(100vw - 2rem));
+  max-height: min(640px, calc(100dvh - 7rem));
+  margin: auto 1rem 5.5rem auto;
+  border-radius: var(--radius-md);
+
+  &[open] {
+    animation: rise var(--dur-med) $ease-out;
+  }
+
+  &::backdrop {
+    background: rgb(0 0 0 / 0.08);
+    backdrop-filter: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+.drawerLeft {
+  width: min(380px, 88vw);
+  max-width: 88vw;
+  height: 100dvh;
+  margin: 0 auto 0 0;
+
+  &[open] {
+    animation: slideLeft var(--dur-med) $ease-out;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(-100%);
+  }
+}

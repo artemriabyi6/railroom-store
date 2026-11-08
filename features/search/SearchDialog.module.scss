@@ -1,0 +1,141 @@
+@use "tokens" as *;
+
+.form {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  transition: border-color var(--dur-fast);
+
+  &:focus-within {
+    border-color: var(--c-text);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    border: 0;
+    background: transparent;
+    font-size: 16px; // prevents iOS zoom
+    outline: none;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.chip {
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  @include label-caps(var(--fs-2xs));
+  @include focus-ring;
+
+  &[aria-pressed="true"] {
+    background: var(--c-text);
+    border-color: var(--c-text);
+    color: #fff;
+  }
+}
+
+.sort select {
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: var(--fs-xs);
+}
+
+.count {
+  margin: var(--sp-4) 0 var(--sp-2);
+  @include label-caps(var(--fs-2xs));
+  color: var(--c-text-muted);
+}
+
+.results {
+  display: grid;
+}
+
+.result {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur-fast);
+  @include focus-ring;
+
+  @include hover {
+    background: rgb(0 0 0 / 0.04);
+  }
+}
+
+.thumb {
+  display: block;
+  width: 56px;
+  height: 64px;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.sub {
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}
+
+.price {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+.empty {
+  padding: var(--sp-8) 0;
+  text-align: center;
+  color: var(--c-text-muted);
+}
+
+.reset {
+  margin-top: var(--sp-3);
+  border-bottom: 1px solid currentColor;
+  @include label-caps(var(--fs-2xs));
+  color: var(--c-text);
+}
