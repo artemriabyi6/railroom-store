@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { GarmentArt } from "@/components/garment/GarmentArt";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -9,7 +9,8 @@ import { shippingCountries } from "@/config/site";
 import { cartActions, useCart } from "@/features/cart/cartStore";
 import { useCurrency } from "@/features/currency/currencyStore";
 import { postJson } from "@/lib/api";
-import { getProduct } from "@/lib/catalog";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
+import { findProduct } from "@/lib/catalog";
 import { priceCart } from "@/lib/pricing";
 import { validateCustomer, type CustomerField } from "@/lib/validation";
 import type { CustomerDetails, FieldErrors } from "@/types/commerce";
@@ -21,20 +22,42 @@ import { LAST_ORDER_KEY } from "./constants";
 interface OrderResponse {
   orderId: string;
   status: string;
-  paymentUrl: string | null;
+  provider: "liqpay" | "stripe" | "demo";
+  payment: { method: "GET" | "POST"; url: string; fields?: Record<string, string> };
+}
+
+/** Continue to the payment provider. LiqPay expects a POSTed form; others are plain redirects. */
+function goToPayment({ method, url, fields }: OrderResponse["payment"]) {
+  if (method === "GET") {
+    window.location.assign(url);
+    return;
+  }
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = url;
+  form.acceptCharset = "utf-8";
+  for (const [name, value] of Object.entries(fields ?? {})) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+  document.body.appendChild(form);
+  form.submit();
 }
 
 export function CheckoutForm() {
   const { lines } = useCart();
   const { currency, formatMinor } = useCurrency();
-  const router = useRouter();
   const cancelled = useSearchParams().get("cancelled") === "1";
   const [values, setValues] = useState<CustomerDetails>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors<CustomerField>>({});
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const priced = priceCart(lines, currency);
+  const catalog = useCatalog();
+  const priced = priceCart(catalog, lines, currency);
 
   if (lines.length === 0) {
     return (
@@ -79,11 +102,7 @@ export function CheckoutForm() {
       } catch {
         /* storage unavailable: the bag simply won't auto-clear */
       }
-      if (res.data.paymentUrl) {
-        window.location.assign(res.data.paymentUrl);
-        return;
-      }
-      router.push(`/checkout/success?order=${encodeURIComponent(res.data.orderId)}`);
+      goToPayment(res.data.payment);
       return;
     }
     setSubmitting(false);
@@ -140,7 +159,7 @@ export function CheckoutForm() {
           {submitting ? "Placing order…" : priced.ok ? `Place order · ${formatMinor(priced.priced.total)}` : "Place order"}
         </Button>
         <p className={styles.fine}>
-          You&apos;ll be charged in {currency}. If online payment is enabled you&apos;ll be taken to our secure payment provider to complete payment.
+          Next you&apos;ll be taken to secure payment. Your items are reserved as soon as you place the order.
         </p>
       </form>
 
@@ -148,7 +167,7 @@ export function CheckoutForm() {
         <h2 className={styles.summaryTitle}>Order summary</h2>
         <ul className={styles.lines}>
           {lines.map((line) => {
-            const product = getProduct(line.slug);
+            const product = findProduct(catalog, line.slug);
             if (!product) return null;
             const unit = priced.ok ? priced.priced.lines.find((l) => l.slug === line.slug && l.size === line.size)?.unitAmount : undefined;
             return (

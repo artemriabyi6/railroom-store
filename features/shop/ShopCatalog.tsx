@@ -4,8 +4,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
-import { categoryLabels, CATEGORIES, getProducts, isCategory, isSize, isSortKey, searchProducts, SORT_OPTIONS, type SortKey } from "@/lib/catalog";
+import { categoryLabels, CATEGORIES, isCategory, isSize, isSortKey, searchProducts, SORT_OPTIONS, type SortKey } from "@/lib/catalog";
 import { SIZES, type ProductCategory, type Size } from "@/types/product";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
 import { ProductCard } from "./ProductCard";
 import styles from "./ShopCatalog.module.scss";
 
@@ -54,7 +55,7 @@ export function ShopCatalog() {
   const [visible, setVisible] = useState({ key: queryKey, count: PAGE_SIZE });
   const count = visible.key === queryKey ? visible.count : PAGE_SIZE;
 
-  const all = getProducts();
+  const all = useCatalog();
   const results = useMemo(
     () => searchProducts(all, { text: deferredText, category: filters.category, size: filters.size, inStockOnly: filters.inStock, sort: filters.sort }),
     [all, deferredText, filters.category, filters.size, filters.inStock, filters.sort],

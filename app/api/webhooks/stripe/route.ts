@@ -1,4 +1,6 @@
+import { revalidateTag } from "next/cache";
 import { apiError, json } from "@/lib/api";
+import { CATALOG_TAG } from "@/services/catalog";
 import { setOrderStatus } from "@/services/orders/store";
 import { verifyStripeSignature } from "@/services/payments/stripe";
 
@@ -32,6 +34,7 @@ export async function POST(request: Request) {
       await setOrderStatus(orderId, "paid");
     } else if (event.type === "checkout.session.expired") {
       await setOrderStatus(orderId, "cancelled");
+      revalidateTag(CATALOG_TAG, "max");
     }
   }
   return json({ received: true });

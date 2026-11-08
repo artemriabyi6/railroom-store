@@ -1,5 +1,5 @@
 import { shippingPolicy } from "@/config/site";
-import { getProduct } from "@/lib/catalog";
+import { findProduct, type Catalog } from "@/lib/catalog";
 import { convertFromEur } from "@/lib/currency";
 import type { CartLine, CurrencyCode, OrderLine } from "@/types/commerce";
 
@@ -18,6 +18,7 @@ export type PriceError = { slug: string; size: string; reason: "unknown_product"
  * and on the server when creating orders, so totals always agree.
  */
 export function priceCart(
+  catalog: Catalog,
   cart: CartLine[],
   currency: CurrencyCode,
 ): { ok: true; priced: PricedCart } | { ok: false; errors: PriceError[] } {
@@ -26,12 +27,12 @@ export function priceCart(
   let subtotalEur = 0;
 
   for (const line of cart) {
-    const product = getProduct(line.slug);
+    const product = findProduct(catalog, line.slug);
     if (!product) {
       errors.push({ slug: line.slug, size: line.size, reason: "unknown_product" });
       continue;
     }
-    if (line.quantity < 1 || line.quantity > product.stock[line.size] || line.quantity > shippingPolicy.maxQuantityPerLine) {
+    if (line.quantity < 1 || line.quantity > (product.stock[line.size] ?? 0) || line.quantity > shippingPolicy.maxQuantityPerLine) {
       errors.push({ slug: line.slug, size: line.size, reason: "insufficient_stock" });
       continue;
     }

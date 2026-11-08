@@ -49,6 +49,8 @@ test("category tile leads to a filtered catalogue", async ({ page }) => {
 test("catalogue filters, sorts, paginates and returns from a product", async ({ page }) => {
   await page.goto("/shop");
   await expect(page.getByRole("heading", { level: 1, name: "Shop all" })).toBeVisible();
+  const initialCount = parseInt(await page.getByText(/^\d+ pieces$/).innerText(), 10);
+  expect(initialCount).toBeGreaterThanOrEqual(24);
   const cards = page.getByRole("article");
   await expect(cards).toHaveCount(12);
   await page.getByRole("button", { name: "Load more" }).click();
@@ -66,7 +68,10 @@ test("catalogue filters, sorts, paginates and returns from a product", async ({ 
   await page.getByRole("searchbox", { name: "Search the catalogue" }).fill("nothing-matches-this");
   await expect(page.getByText("Nothing on the rail matches")).toBeVisible();
   await page.getByRole("button", { name: "Clear filters" }).last().click();
-  await expect(page.getByText(/28 pieces/)).toBeVisible();
+  // The admin e2e test may add/remove products concurrently; compare with the count seen at the start.
+  await expect
+    .poll(async () => Math.abs(parseInt(await page.getByText(/^\d+ pieces$/).innerText(), 10) - initialCount))
+    .toBeLessThanOrEqual(1);
 
   await page.goto("/shop?category=bottoms");
   await page.getByRole("link", { name: /Night Pleat Trousers/ }).click();

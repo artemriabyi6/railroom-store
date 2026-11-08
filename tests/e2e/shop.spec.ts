@@ -93,15 +93,19 @@ test("checkout validates input and places an order", async ({ page }) => {
   await page.getByRole("combobox", { name: "Country" }).selectOption("Ireland");
   await page.getByRole("button", { name: /Place order/ }).click();
 
+  // No payment provider in tests: the demo payment page simulates the result.
+  await expect(page).toHaveURL(/\/checkout\/pay\/RR-/);
+  await expect(page.getByText(/Demo mode/)).toBeVisible();
+  await page.getByRole("button", { name: "Simulate successful payment" }).click();
   await expect(page).toHaveURL(/\/checkout\/success\?order=RR-/);
-  const orderId = (await page.getByText(/^RR-[A-Z0-9]{8}$/).textContent())!.trim();
+  const orderId = (await page.getByText(/^RR-[A-Z0-9]{8}$/).filter({ visible: true }).textContent())!.trim();
   await expect(page.getByRole("button", { name: "Open bag, empty" })).toBeVisible();
 
   await page.getByRole("link", { name: "Track this order" }).click();
   await expect(page.getByRole("textbox", { name: "Order number" })).toHaveValue(orderId);
   await page.getByRole("textbox", { name: "Email" }).fill("e2e.buyer@example.test");
   await page.getByRole("button", { name: "Find my order" }).click();
-  await expect(page.getByText("Awaiting payment")).toBeVisible();
+  await expect(page.getByText(/Paid/)).toBeVisible();
 });
 
 test("contact form validates and sends", async ({ page }) => {

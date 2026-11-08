@@ -8,7 +8,8 @@ import { toast } from "@/components/ui/toastStore";
 import { cartActions, cartStore, useCart } from "@/features/cart/cartStore";
 import { useCurrency } from "@/features/currency/currencyStore";
 import { canAddMore } from "@/lib/cart";
-import { getRelatedProducts, stockLevel } from "@/lib/catalog";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
+import { relatedProducts, stockLevel } from "@/lib/catalog";
 import { SIZES, type Product, type Size } from "@/types/product";
 import { AvailabilityDialog } from "./AvailabilityDialog";
 import { productHref } from "./navigation";
@@ -29,9 +30,9 @@ interface ProductPanelProps {
 }
 
 export function ProductPanel({ product, origin, onClose, onOpenRelated }: ProductPanelProps) {
-  const related = getRelatedProducts(product, 4);
+  const catalog = useCatalog();
+  const related = relatedProducts(catalog, product, 4);
   const [view, setView] = useState<GarmentView>("front");
-  const [toggled, setToggled] = useState(false);
   const [size, setSize] = useState<Size | null>(null);
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const figureRef = useRef<HTMLDivElement>(null);
@@ -74,15 +75,15 @@ export function ProductPanel({ product, origin, onClose, onOpenRelated }: Produc
   }, []);
 
   const soldOut = SIZES.every((s) => product.stock[s] <= 0);
-  const maxed = size ? !canAddMore(lines, product.slug, size) : false;
+  const maxed = size ? !canAddMore(catalog, lines, product.slug, size) : false;
 
   const addToBag = () => {
     if (!size) return;
-    if (!canAddMore(cartStore.get(), product.slug, size)) {
+    if (!canAddMore(catalog, cartStore.get(), product.slug, size)) {
       toast(`You already have the maximum available in size ${size}.`, "error");
       return;
     }
-    cartActions.add(product.slug, size);
+    cartActions.add(catalog, product.slug, size);
     // The bag drawer opening (with an aria-labelled title) is the confirmation.
     cartActions.open();
   };
@@ -94,14 +95,18 @@ export function ProductPanel({ product, origin, onClose, onOpenRelated }: Produc
       </button>
 
       <div ref={figureRef} className={styles.figure}>
-        <div key={view} className={styles.flip} data-animate={toggled ? "" : undefined}>
-          <GarmentArt
-            art={product.art}
-            view={view}
-            uid={`panel-${product.slug}-${view}`}
-            label={`${product.name} in ${product.colorName}, ${view} view`}
-            className={styles.garment}
-          />
+        {/* Both sides are rendered once; toggling only rotates the hanger, so nothing re-mounts or re-paints. */}
+        <div className={styles.turn} data-view={view}>
+          {(["front", "back"] as const).map((side) => (
+            <GarmentArt
+              key={side}
+              art={product.art}
+              view={side}
+              uid={`panel-${product.slug}-${side}`}
+              label={side === view ? `${product.name} in ${product.colorName}, ${side} view` : undefined}
+              className={`${styles.garment} ${styles.face} ${side === "back" ? styles.backFace : ""}`}
+            />
+          ))}
         </div>
       </div>
 
@@ -117,11 +122,7 @@ export function ProductPanel({ product, origin, onClose, onOpenRelated }: Produc
         <div className={styles.toggle} role="group" aria-label="Garment view">
           {(["front", "back"] as const).map((v) => (
             <button key={v} type="button" aria-pressed={view === v} className={styles.toggleBtn}
-              onClick={() => {
-                if (v === view) return;
-                setToggled(true);
-                setView(v);
-              }}
+              onClick={() => setView(v)}
             >
               {v}
             </button>

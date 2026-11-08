@@ -21,7 +21,8 @@ export default defineConfig({
     command: `npm run start -- -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    env: { DATA_DIR: ".data/e2e" },
+    // Test-only values: a throwaway data dir and an admin password for the admin e2e test.
+    env: { DATA_DIR: ".data/e2e", ADMIN_PASSWORD: "e2e-admin-password", PAYMENT_PROVIDER: "demo" },
     timeout: 120_000,
   },
 });

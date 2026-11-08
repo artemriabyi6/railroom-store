@@ -1,31 +1,32 @@
-import { products } from "@/data/products";
 import { SIZES, type Product, type ProductCategory, type Size } from "@/types/product";
 
-export function getProducts(): readonly Product[] {
-  return products;
-}
+/**
+ * Pure helpers over a catalogue list. The list itself comes from the database
+ * (server: services/catalog, client: useCatalog()).
+ */
+export type Catalog = readonly Product[];
 
-export function getProduct(slug: string): Product | undefined {
-  return products.find((p) => p.slug === slug);
+export function findProduct(list: Catalog, slug: string): Product | undefined {
+  return list.find((p) => p.slug === slug);
 }
 
 /** Garments that hang on the homepage hero rail, in catalogue order. */
-export function getRailProducts(): Product[] {
-  return products.filter((p) => p.rail);
+export function railProducts(list: Catalog): Product[] {
+  return list.filter((p) => p.rail);
 }
 
-export function getNewProducts(): Product[] {
-  return products.filter((p) => p.isNew);
+export function newProducts(list: Catalog): Product[] {
+  return list.filter((p) => p.isNew);
 }
 
-export function getCategoryProducts(category: ProductCategory): Product[] {
-  return products.filter((p) => p.category === category);
+export function categoryProducts(list: Catalog, category: ProductCategory): Product[] {
+  return list.filter((p) => p.category === category);
 }
 
 /** Same category first, then other new pieces — never the product itself. */
-export function getRelatedProducts(product: Product, limit = 4): Product[] {
-  const same = products.filter((p) => p.slug !== product.slug && p.category === product.category);
-  const others = products.filter((p) => p.slug !== product.slug && p.category !== product.category && p.isNew);
+export function relatedProducts(list: Catalog, product: Product, limit = 4): Product[] {
+  const same = list.filter((p) => p.slug !== product.slug && p.category === product.category);
+  const others = list.filter((p) => p.slug !== product.slug && p.category !== product.category && p.isNew);
   return [...same, ...others].slice(0, limit);
 }
 
@@ -34,13 +35,13 @@ export function isSize(value: unknown): value is Size {
 }
 
 export function totalStock(product: Product): number {
-  return SIZES.reduce((sum, size) => sum + product.stock[size], 0);
+  return SIZES.reduce((sum, size) => sum + (product.stock[size] ?? 0), 0);
 }
 
 export type StockLevel = "out" | "low" | "in";
 
 export function stockLevel(product: Product, size: Size): StockLevel {
-  const qty = product.stock[size];
+  const qty = product.stock[size] ?? 0;
   if (qty <= 0) return "out";
   if (qty <= 2) return "low";
   return "in";
@@ -85,13 +86,13 @@ export interface ProductQuery {
 
 /** Pure search / filter / sort over the catalogue (stable for equal keys). */
 export function searchProducts(
-  list: readonly Product[],
+  list: Catalog,
   { text = "", category = "all", size = null, inStockOnly = false, sort = "featured" }: ProductQuery,
 ): Product[] {
   const terms = text.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const filtered = list.filter((p) => {
     if (category !== "all" && p.category !== category) return false;
-    if (size && p.stock[size] <= 0) return false;
+    if (size && (p.stock[size] ?? 0) <= 0) return false;
     if (inStockOnly && totalStock(p) === 0) return false;
     if (terms.length === 0) return true;
     const haystack = `${p.name} ${p.colorName} ${categoryLabels[p.category]} ${p.description}`.toLowerCase();

@@ -1,16 +1,17 @@
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/config/site";
+import { HomeSections } from "@/features/home/HomeSections";
 import { Rack } from "@/features/rack/Rack";
 import { productHref } from "@/features/rack/navigation";
-import { HomeSections } from "@/features/home/HomeSections";
-import { getProducts, getRailProducts } from "@/lib/catalog";
+import { railProducts } from "@/lib/catalog";
+import { getCatalog } from "@/services/catalog";
 
-export default function HomePage() {
-  const products = getProducts();
+export default async function HomePage() {
+  const catalog = await getCatalog();
   return (
     <>
-      <Rack railProducts={getRailProducts()} products={products} />
-      <HomeSections />
+      <Rack railProducts={railProducts(catalog)} products={catalog} />
+      <HomeSections catalog={catalog} />
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -18,7 +19,7 @@ export default function HomePage() {
             { "@type": "Organization", name: siteConfig.name, url: siteConfig.url, ...(siteConfig.instagram ? { sameAs: [siteConfig.instagram] } : {}) },
             {
               "@type": "ItemList",
-              itemListElement: products.map((p, i) => ({
+              itemListElement: catalog.map((p, i) => ({
                 "@type": "ListItem",
                 position: i + 1,
                 url: `${siteConfig.url}${productHref(p.slug)}`,

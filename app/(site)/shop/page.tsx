@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { siteConfig } from "@/config/site";
 import { ShopCatalog } from "@/features/shop/ShopCatalog";
 import { ShopSkeleton } from "@/features/shop/ShopSkeleton";
-import { getProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Shop all",
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<ShopSkeleton count={Math.min(12, getProducts().length)} />}>
+    <Suspense fallback={<ShopSkeleton count={12} />}>
       <ShopCatalog />
     </Suspense>
   );

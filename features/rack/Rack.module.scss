@@ -13,7 +13,10 @@
   }
 
   @include down($bp-md) {
+    // On phones the rail is short; a full-viewport hero left a large empty band below it.
+    min-height: 0;
     padding-top: var(--sp-8);
+    padding-bottom: var(--sp-8);
   }
 }
 

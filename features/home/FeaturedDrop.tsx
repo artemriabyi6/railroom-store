@@ -24,8 +24,19 @@ export function FeaturedDrop({ colourways }: { colourways: readonly Product[] })
       <div className={styles.inner}>
         <div className={styles.visual} onMouseEnter={() => setView("back")} onMouseLeave={() => setView("front")}>
           <span className={styles.rail} aria-hidden="true" />
-          <div key={`${product.slug}-${view}`} className={styles.garment}>
-            <GarmentArt art={product.art} view={view} uid={`drop-${product.slug}-${view}`} label={`${product.name}, ${view} view`} />
+          <div className={styles.garment}>
+            <div key={product.slug} className={styles.turn} data-view={view}>
+              {(["front", "back"] as const).map((side) => (
+                <GarmentArt
+                  key={side}
+                  art={product.art}
+                  view={side}
+                  uid={`drop-${product.slug}-${side}`}
+                  label={side === view ? `${product.name}, ${side} view` : undefined}
+                  className={`${styles.face} ${side === "back" ? styles.backFace : ""}`}
+                />
+              ))}
+            </div>
           </div>
           <p className={styles.hint} aria-hidden="true">
             Hover to see the back

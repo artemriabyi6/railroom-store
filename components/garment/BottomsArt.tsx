@@ -155,7 +155,7 @@ export function BottomsArt({ art, view = "front", uid, label, className, showHan
         <path d={mirror(`M${p(CX - HALF - (shorts ? 11 : 6.5), hemY - 8)} L${p(CX - 6, hemY - 6)}`)} />
       </g>
 
-      <g clipPath={`url(#${clip})`} style={{ mixBlendMode: "multiply" }}>
+      <g clipPath={`url(#${clip})`}>
         <rect x="0" y="0" width={VIEW_W} height={VIEW_H} fill={`url(#${shadeId})`} />
       </g>
 

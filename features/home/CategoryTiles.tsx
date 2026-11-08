@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { GarmentArt } from "@/components/garment/GarmentArt";
 import { SectionHeading } from "@/components/layout/SectionHeading";
-import { CATEGORIES, categoryLabels, getCategoryProducts } from "@/lib/catalog";
+import { CATEGORIES, categoryLabels, categoryProducts, type Catalog } from "@/lib/catalog";
 import styles from "./CategoryTiles.module.scss";
 import section from "./HomeSection.module.scss";
 
-export function CategoryTiles() {
+export function CategoryTiles({ catalog }: { catalog: Catalog }) {
   return (
     <section className={section.section} aria-label="Shop by category">
       <SectionHeading eyebrow="Browse" title="Shop by category" action={{ href: "/shop", label: "View the full catalogue" }} />
       <ul className={styles.grid}>
         {CATEGORIES.map((category) => {
-          const items = getCategoryProducts(category);
+          const items = categoryProducts(catalog, category);
+          if (items.length === 0) return null;
           const shown = items.slice(0, 3);
           return (
             <li key={category}>

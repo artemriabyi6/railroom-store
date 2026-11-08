@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/Toaster";
 import { siteConfig } from "@/config/site";
-import { CartDrawer } from "@/features/cart/CartDrawer";
-import { SupportLauncher } from "@/features/support/SupportLauncher";
+import { CatalogProvider } from "@/features/catalog/CatalogProvider";
+import { getCatalog } from "@/services/catalog";
 import "./globals.scss";
 
 const archivo = Archivo({
@@ -41,19 +39,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Cached ("use cache" + "catalog" tag): part of the static shell, refreshed when admins edit products.
+  const catalog = await getCatalog();
   return (
     <html lang="en" className={archivo.variable}>
       <body>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
-        <CartDrawer />
-        <SupportLauncher />
-        <Toaster />
+        <CatalogProvider products={catalog}>
+          {children}
+          <Toaster />
+        </CatalogProvider>
       </body>
     </html>
   );

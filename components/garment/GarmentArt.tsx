@@ -325,7 +325,7 @@ function TopArt({ art, view = "front", uid, label, className, showHanger = true 
       )}
 
       {/* Shading over the whole silhouette */}
-      <g clipPath={`url(#${clip})`} style={{ mixBlendMode: "multiply" }}>
+      <g clipPath={`url(#${clip})`}>
         <rect x="0" y="0" width={VIEW_W} height={VIEW_H} fill={`url(#${shadeId})`} />
       </g>
 

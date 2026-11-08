@@ -53,12 +53,15 @@
   perspective: 1200px;
 }
 
-.flip {
+.turn {
+  position: relative;
   width: 100%;
   height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 650ms $ease-out;
 
-  &[data-animate] {
-    animation: flip var(--dur-slow) $ease-out;
+  &[data-view="back"] {
+    transform: rotateY(180deg);
   }
 }
 
@@ -66,6 +69,17 @@
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 22px 26px rgb(0 0 0 / 0.22));
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.backFace {
+  transform: rotateY(180deg);
 }
 
 .info {
@@ -275,13 +289,6 @@
   from {
     opacity: 0;
     transform: translateY(10px);
-  }
-}
-
-@keyframes flip {
-  from {
-    transform: rotateY(-90deg);
-    opacity: 0.4;
   }
 }
 

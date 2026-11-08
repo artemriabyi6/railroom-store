@@ -7,7 +7,8 @@ import { MinusIcon, PlusIcon } from "@/components/ui/icons";
 import { shippingPolicy } from "@/config/site";
 import { useCurrency } from "@/features/currency/currencyStore";
 import { canAddMore } from "@/lib/cart";
-import { getProduct } from "@/lib/catalog";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
+import { findProduct } from "@/lib/catalog";
 import { priceCart } from "@/lib/pricing";
 import styles from "./CartDrawer.module.scss";
 import { cartActions, useCart, useCartOpen } from "./cartStore";
@@ -16,8 +17,9 @@ export function CartDrawer() {
   const open = useCartOpen();
   const { lines, count } = useCart();
   const { currency, formatEur, formatMinor } = useCurrency();
-  const priced = priceCart(lines, currency);
-  const subtotalEur = lines.reduce((sum, l) => sum + (getProduct(l.slug)?.priceEur ?? 0) * l.quantity, 0);
+  const catalog = useCatalog();
+  const priced = priceCart(catalog, lines, currency);
+  const subtotalEur = lines.reduce((sum, l) => sum + (findProduct(catalog, l.slug)?.priceEur ?? 0) * l.quantity, 0);
   const remainingForFree = Math.max(0, shippingPolicy.freeFromEur - subtotalEur);
 
   return (
@@ -65,7 +67,7 @@ export function CartDrawer() {
           </p>
           <ul className={styles.lines}>
             {lines.map((line) => {
-              const product = getProduct(line.slug);
+              const product = findProduct(catalog, line.slug);
               if (!product) return null;
               return (
                 <li key={`${line.slug}-${line.size}`} className={styles.line}>
@@ -81,7 +83,7 @@ export function CartDrawer() {
                       <div className={styles.stepper} role="group" aria-label={`Quantity for ${product.name}, size ${line.size}`}>
                         <button
                           type="button"
-                          onClick={() => cartActions.setQuantity(line.slug, line.size, line.quantity - 1)}
+                          onClick={() => cartActions.setQuantity(catalog, line.slug, line.size, line.quantity - 1)}
                           aria-label="Decrease quantity"
                         >
                           <MinusIcon size={14} />
@@ -89,8 +91,8 @@ export function CartDrawer() {
                         <output aria-live="polite">{line.quantity}</output>
                         <button
                           type="button"
-                          onClick={() => cartActions.setQuantity(line.slug, line.size, line.quantity + 1)}
-                          disabled={!canAddMore(lines, line.slug, line.size)}
+                          onClick={() => cartActions.setQuantity(catalog, line.slug, line.size, line.quantity + 1)}
+                          disabled={!canAddMore(catalog, lines, line.slug, line.size)}
                           aria-label="Increase quantity"
                         >
                           <PlusIcon size={14} />

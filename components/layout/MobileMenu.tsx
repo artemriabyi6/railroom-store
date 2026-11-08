@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
-import { categoryLabels, CATEGORIES, getCategoryProducts } from "@/lib/catalog";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
+import { categoryLabels, CATEGORIES, categoryProducts } from "@/lib/catalog";
 import styles from "./MobileMenu.module.scss";
 
 const SECONDARY = [
@@ -16,6 +17,7 @@ const SECONDARY = [
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const catalog = useCatalog();
 
   // Close after navigating.
   const [lastPath, setLastPath] = useState(pathname);
@@ -58,7 +60,7 @@ export function MobileMenu() {
               <li key={c}>
                 <Link href={`/shop?category=${c}`} onClick={() => setOpen(false)}>
                   {categoryLabels[c]}
-                  <span>{getCategoryProducts(c).length}</span>
+                  <span>{categoryProducts(catalog, c).length}</span>
                 </Link>
               </li>
             ))}

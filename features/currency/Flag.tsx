@@ -37,6 +37,13 @@ export function Flag({ code, className }: { code: CurrencyCode; className?: stri
           <path d="M9 0v12M0 6h18" stroke="#c8102e" strokeWidth="2" />
         </svg>
       );
+    case "UAH":
+      return (
+        <svg {...common}>
+          <rect width="18" height="6" fill="#0057b7" />
+          <rect y="6" width="18" height="6" fill="#ffd700" />
+        </svg>
+      );
     case "NGN":
       return (
         <svg {...common}>

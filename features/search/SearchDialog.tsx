@@ -7,7 +7,8 @@ import { Dialog } from "@/components/ui/Dialog";
 import { SearchIcon } from "@/components/ui/icons";
 import { useCurrency } from "@/features/currency/currencyStore";
 import { productHref, selectProduct, slugFromPath } from "@/features/rack/navigation";
-import { CATEGORIES as PRODUCT_CATEGORIES, categoryLabels, getProducts, searchProducts, SORT_OPTIONS, totalStock, type SortKey } from "@/lib/catalog";
+import { CATEGORIES as PRODUCT_CATEGORIES, categoryLabels, searchProducts, SORT_OPTIONS, totalStock, type SortKey } from "@/lib/catalog";
+import { useCatalog } from "@/features/catalog/CatalogProvider";
 import styles from "./SearchDialog.module.scss";
 
 const CATEGORIES = ["all", ...PRODUCT_CATEGORIES] as const;
@@ -18,7 +19,8 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("all");
   const [sort, setSort] = useState<SortKey>("featured");
   const deferredText = useDeferredValue(text);
-  const results = useMemo(() => searchProducts(getProducts(), { text: deferredText, category, sort }), [deferredText, category, sort]);
+  const catalog = useCatalog();
+  const results = useMemo(() => searchProducts(catalog, { text: deferredText, category, sort }), [catalog, deferredText, category, sort]);
   const { formatEur } = useCurrency();
   const pathname = usePathname();
   const router = useRouter();

@@ -1,12 +1,15 @@
+import { revalidateTag } from "next/cache";
 import { apiError, json, readJson } from "@/lib/api";
-import { sanitizeCart } from "@/lib/cart";
+import { parseCart } from "@/lib/cart";
 import { isCurrency } from "@/lib/currency";
 import { priceCart } from "@/lib/pricing";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
 import { validateCustomer } from "@/lib/validation";
-import { deliverEvent } from "@/services/notifications/webhook";
-import { createOrder, generateOrderId, updateOrder } from "@/services/orders/store";
-import { createCheckoutSession, isStripeConfigured } from "@/services/payments/stripe";
+import { CATALOG_TAG } from "@/services/catalog";
+import { listProducts, OutOfStockError } from "@/services/catalog/repository";
+import { notify } from "@/services/notifications/webhook";
+import { generateOrderId, placeOrder, setPaymentRef } from "@/services/orders/store";
+import { activePaymentProvider, startPayment } from "@/services/payments";
 import type { Order } from "@/types/commerce";
 
 export async function POST(request: Request) {
@@ -26,15 +29,15 @@ export async function POST(request: Request) {
   const currency = isCurrency(body.currency) ? body.currency : null;
   if (!currency) return apiError(422, "Unsupported currency.");
 
-  const items = Array.isArray(body.items) ? body.items : [];
-  const cart = sanitizeCart(items);
-  if (cart.length === 0 || cart.length !== items.length) {
-    return apiError(409, "Some items in your bag are no longer available. Please review your bag.");
-  }
+  const cart = parseCart(body.items);
+  if (cart.length === 0) return apiError(409, "Your bag is empty.");
 
-  const priced = priceCart(cart, currency);
-  if (!priced.ok) return apiError(409, "Some items in your bag are no longer available.", { items: priced.errors });
+  // Price against the live catalogue (not the page cache), so stock and prices are current.
+  const catalog = await listProducts();
+  const priced = priceCart(catalog, cart, currency);
+  if (!priced.ok) return apiError(409, "Some items in your bag are no longer available. Please review your bag.", { items: priced.errors });
 
+  const provider = activePaymentProvider();
   const now = new Date().toISOString();
   const order: Order = {
     id: generateOrderId(),
@@ -47,29 +50,29 @@ export async function POST(request: Request) {
     shipping: priced.priced.shipping,
     total: priced.priced.total,
     customer: customer.data,
+    paymentProvider: provider,
   };
 
   try {
-    await createOrder(order);
+    await placeOrder(order);
   } catch (err) {
-    console.error("[orders] failed to persist order", err);
+    if (err instanceof OutOfStockError) {
+      return apiError(409, "Someone just bought the last one. Please review your bag.", { items: [{ slug: err.slug, size: err.size, reason: "insufficient_stock" }] });
+    }
+    console.error("[orders] failed to place order", err);
     return apiError(500, "We couldn't place your order. Please try again.");
   }
 
-  deliverEvent("order", { orderId: order.id, total: order.total, currency, email: order.customer.email }).catch((err) =>
-    console.error("[orders] notification failed", err),
-  );
+  // Stock changed: refresh the storefront in the background.
+  revalidateTag(CATALOG_TAG, "max");
+  void notify("order", { orderId: order.id, total: order.total, currency, email: order.customer.email, provider });
 
-  if (isStripeConfigured()) {
-    try {
-      const session = await createCheckoutSession(order, new URL(request.url).origin);
-      await updateOrder(order.id, { paymentSessionId: session.id });
-      return json({ orderId: order.id, status: order.status, paymentUrl: session.url }, 201);
-    } catch (err) {
-      console.error("[orders] payment session failed", err);
-      return apiError(502, "Payment provider is unavailable. Your order was saved — please try again.", { orderId: order.id });
-    }
+  try {
+    const { step, ref } = await startPayment(provider, order, new URL(request.url).origin);
+    if (ref) await setPaymentRef(order.id, provider, ref);
+    return json({ orderId: order.id, status: order.status, provider, payment: step }, 201);
+  } catch (err) {
+    console.error("[orders] payment start failed", err);
+    return apiError(502, "Payment provider is unavailable. Your order was saved — please try again.", { orderId: order.id });
   }
-
-  return json({ orderId: order.id, status: order.status, paymentUrl: null }, 201);
 }

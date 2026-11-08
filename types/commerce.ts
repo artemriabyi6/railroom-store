@@ -1,6 +1,6 @@
 import type { Size } from "./product";
 
-export const CURRENCIES = ["EUR", "USD", "GBP", "NGN"] as const;
+export const CURRENCIES = ["EUR", "UAH", "USD", "GBP", "NGN"] as const;
 export type CurrencyCode = (typeof CURRENCIES)[number];
 
 export interface CartLine {
@@ -42,7 +42,10 @@ export interface Order {
   shipping: number;
   total: number;
   customer: CustomerDetails;
-  paymentSessionId?: string;
+  /** Which payment integration handled the order: "liqpay" | "stripe" | "demo". */
+  paymentProvider?: string;
+  /** Provider-side reference (session id, LiqPay payment id…). */
+  paymentRef?: string;
 }
 
 /** Public, non-sensitive view of an order returned by lookup. */

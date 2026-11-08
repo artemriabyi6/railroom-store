@@ -35,7 +35,7 @@ const ITEMS = [
   { icon: ICONS.truck, title: `Free shipping over ${formatMinor(shippingPolicy.freeFromEur, "EUR").replace(/\.00$/, "")}`, text: "EU delivery in 2–5 working days" },
   { icon: ICONS.return, title: "14-day returns", text: "Unworn, with tags, no questions asked" },
   { icon: ICONS.needle, title: "Made in small runs", text: "Most styles are never restocked" },
-  { icon: ICONS.lock, title: "Secure checkout", text: "Pay by card through Stripe" },
+  { icon: ICONS.lock, title: "Secure checkout", text: "Card payments via LiqPay" },
 ];
 
 export function BenefitsStrip() {

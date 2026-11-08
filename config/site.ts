@@ -25,6 +25,7 @@ export interface CurrencyDefinition {
 
 export const currencies: Record<CurrencyCode, CurrencyDefinition> = {
   EUR: { code: "EUR", label: "Euro", locale: "en-IE", rate: 1 },
+  UAH: { code: "UAH", label: "Ukrainian Hryvnia", locale: "uk-UA", rate: 47 },
   USD: { code: "USD", label: "US Dollar", locale: "en-US", rate: 1.08 },
   GBP: { code: "GBP", label: "British Pound", locale: "en-GB", rate: 0.85 },
   NGN: { code: "NGN", label: "Nigerian Naira", locale: "en-NG", rate: 1650 },
